@@ -2,40 +2,41 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, User, Lock, AlertCircle, Clipboard, ArrowRight, Key, ShieldCheck, Undo2 } from 'lucide-react';
 
+type LoginStep = 1 | 2 | 3;
+
 export default function Login() {
   const { login, setManualToken } = useAuth();
-  
-  // States
-  const [step, setStep] = useState(1); // 1: Credentials, 2: Display Token, 3: Manual Input
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [generatedToken, setGeneratedToken] = useState('');
-  const [pastedToken, setPastedToken] = useState('');
-  
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
 
-  const handleCredentialsSubmit = async (e) => {
+  const [step, setStep] = useState<LoginStep>(1);
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [generatedToken, setGeneratedToken] = useState<string>('');
+  const [pastedToken, setPastedToken] = useState<string>('');
+
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+
+  const handleCredentialsSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
     const { success, token, message } = await login(username, password);
-    if (success) {
+    if (success && token) {
       setGeneratedToken(token);
       setStep(2);
     } else {
-      setError(message);
+      setError(message || 'Error desconocido');
     }
     setIsLoading(false);
   };
 
-  const handleManualAuth = (e) => {
+  const handleManualAuth = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { success, message } = setManualToken(pastedToken);
     if (!success) {
-      setError(message);
+      setError(message || 'Error desconocido');
     }
   };
 
@@ -45,7 +46,7 @@ export default function Login() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const handleDemoFill = (type) => {
+  const handleDemoFill = (type: string) => {
     if (type === 'admin') {
       setUsername('admin');
       setPassword('admin123');
@@ -65,7 +66,7 @@ export default function Login() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', width: '100%', padding: '20px' }}>
       <div className="glass-panel animate-enter" style={{ width: '100%', maxWidth: '400px' }}>
-        
+
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
@@ -101,8 +102,8 @@ export default function Login() {
               <span style={{ position: 'absolute', left: '12px', top: '13px', color: 'var(--clr-text-muted)' }}>
                 <User size={18} />
               </span>
-              <input 
-                type="text" className="input-field" placeholder="Usuario" 
+              <input
+                type="text" className="input-field" placeholder="Usuario"
                 style={{ paddingLeft: '2.5rem', marginBottom: 0 }}
                 value={username} onChange={(e) => setUsername(e.target.value)} required
               />
@@ -112,8 +113,8 @@ export default function Login() {
               <span style={{ position: 'absolute', left: '12px', top: '13px', color: 'var(--clr-text-muted)' }}>
                 <Lock size={18} />
               </span>
-              <input 
-                type="password" className="input-field" placeholder="Contraseña" 
+              <input
+                type="password" className="input-field" placeholder="Contraseña"
                 style={{ paddingLeft: '2.5rem', marginBottom: 0 }}
                 value={password} onChange={(e) => setPassword(e.target.value)} required
               />
@@ -134,7 +135,7 @@ export default function Login() {
                 {generatedToken}
               </div>
             </div>
-            
+
             <div style={{ display: 'flex', gap: '1rem' }}>
               <button onClick={copyToClipboard} className="btn" style={{ flex: 1, background: isCopied ? 'var(--clr-success)' : 'var(--clr-bg-elevated)' }}>
                 {isCopied ? '¡Copiado!' : <><Clipboard size={18} /> Copiar</>}
@@ -143,7 +144,7 @@ export default function Login() {
                 Continuar <ArrowRight size={18} />
               </button>
             </div>
-            
+
             <button onClick={resetForm} className="btn" style={{ width: '100%', marginTop: '1rem', background: 'transparent', color: 'var(--clr-text-muted)', fontSize: '0.8rem' }}>
               <Undo2 size={14} /> Volver a Inicio de Sesión
             </button>
@@ -153,16 +154,16 @@ export default function Login() {
         {/* Step 3: Paste Token */}
         {step === 3 && (
           <form onSubmit={handleManualAuth} className="animate-enter">
-            <textarea 
-              className="input-field" 
-              placeholder="Pega tu token aquí..." 
+            <textarea
+              className="input-field"
+              placeholder="Pega tu token aquí..."
               rows={5}
               style={{ fontFamily: 'monospace', fontSize: '0.8rem', resize: 'none', marginBottom: '1.5rem' }}
               value={pastedToken}
               onChange={(e) => setPastedToken(e.target.value)}
               required
             />
-            
+
             <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
               Validar y Acceder al Panel
             </button>

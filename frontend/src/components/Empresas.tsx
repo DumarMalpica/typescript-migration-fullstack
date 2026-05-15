@@ -3,6 +3,21 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Plus, Edit2, Trash2, Building } from 'lucide-react';
 
+interface EmpresaData {
+  _id: string;
+  id: number;
+  nombre: string;
+  direccion: string;
+  telefono: string;
+}
+
+interface FormData {
+  id: string;
+  nombre: string;
+  direccion: string;
+  telefono: string;
+}
+
 const getBaseUrl = () => {
     const isProd = window.location.hostname.includes('vercel.app');
     const RENDER_URL = 'https://taller-api-rest-mom1.onrender.com';
@@ -13,12 +28,12 @@ const API_URL = `${getBaseUrl()}/api/empresas`;
 
 export default function Empresas() {
     const { token, user } = useAuth();
-    const [empresas, setEmpresas] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [editingId, setEditingId] = useState(null);
-    const [formData, setFormData] = useState({ id: '', nombre: '', direccion: '', telefono: '' });
+    const [empresas, setEmpresas] = useState<EmpresaData[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [formData, setFormData] = useState<FormData>({ id: '', nombre: '', direccion: '', telefono: '' });
 
     const isAdmin = user?.role === 'admin';
 
@@ -28,16 +43,20 @@ export default function Empresas() {
 
     const fetchEmpresas = async () => {
         try {
-            const res = await axios.get(API_URL, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get<{ data: EmpresaData[] }>(API_URL, { headers: { Authorization: `Bearer ${token}` } });
             setEmpresas(res.data?.data || []);
             setLoading(false);
-        } catch (err) {
-            setError(err.response?.data?.msg || 'Error al obtener datos');
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.msg || 'Error al obtener datos');
+            } else {
+                setError('Error al obtener datos');
+            }
             setLoading(false);
         }
     };
 
-    const handleSave = async (e) => {
+    const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -51,23 +70,31 @@ export default function Empresas() {
             setShowModal(false);
             setEditingId(null);
             fetchEmpresas();
-        } catch (err) {
-            alert(err.response?.data?.msg || 'Error al guardar datos');
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)) {
+                alert(err.response?.data?.msg || 'Error al guardar datos');
+            } else {
+                alert('Error al guardar datos');
+            }
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id: number) => {
         if (!window.confirm('¿Estás seguro de que deseas eliminar esta empresa?')) return;
         try {
             await axios.delete(`${API_URL}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
             fetchEmpresas();
-        } catch (err) {
-            alert(err.response?.data?.msg || 'Error al eliminar datos');
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)) {
+                alert(err.response?.data?.msg || 'Error al eliminar datos');
+            } else {
+                alert('Error al eliminar datos');
+            }
         }
     };
 
-    const openEditModal = (empresa) => {
-        setFormData({ id: empresa.id, nombre: empresa.nombre, direccion: empresa.direccion, telefono: empresa.telefono });
+    const openEditModal = (empresa: EmpresaData) => {
+        setFormData({ id: String(empresa.id), nombre: empresa.nombre, direccion: empresa.direccion, telefono: empresa.telefono });
         setEditingId(empresa.id);
         setShowModal(true);
     };
@@ -131,7 +158,7 @@ export default function Empresas() {
                             <input className="input-field" type="text" placeholder="Nombre (solo letras)" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" value={formData.nombre} onChange={e => setFormData({ ...formData, nombre: e.target.value })} required />
                             <input className="input-field" type="text" placeholder="Dirección" value={formData.direccion} onChange={e => setFormData({ ...formData, direccion: e.target.value })} required />
                             <input className="input-field" type="text" placeholder="Teléfono" value={formData.telefono} onChange={e => setFormData({ ...formData, telefono: e.target.value })} required />
-                            
+
                             <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
                                 <button type="button" className="btn" style={{ flex: 1, border: '1px solid var(--clr-bg-elevated)', color: 'var(--clr-text-main)' }} onClick={() => setShowModal(false)}>Cancelar</button>
                                 <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Guardar</button>

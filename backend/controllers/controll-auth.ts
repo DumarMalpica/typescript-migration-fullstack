@@ -1,8 +1,16 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { Request, Response } from 'express';
 dotenv.config();
 
-const getUsuarios = () => [
+interface UsuarioLocal {
+  id: number;
+  username?: string;
+  password?: string;
+  role: string;
+}
+
+const getUsuarios = (): UsuarioLocal[] => [
   {
     id: 1,
     username: process.env.ADMIN_USER,
@@ -17,7 +25,7 @@ const getUsuarios = () => [
   }
 ];
 
-export const login = (req, res) => {
+export const login = (req: Request, res: Response): any => {
   try {
     const { username, password } = req.body;
 
@@ -38,7 +46,7 @@ export const login = (req, res) => {
       exp: Math.floor(Date.now() / 1000) + (60 * 60)
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET);
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string);
 
     return res.status(200).json({
       state: true,
@@ -47,6 +55,6 @@ export const login = (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json({ state: false, msg: error.message });
+    return res.status(500).json({ state: false, msg: (error as Error).message });
   }
 };

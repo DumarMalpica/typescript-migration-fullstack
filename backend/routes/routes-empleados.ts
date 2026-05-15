@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import * as ctrl from '../controllers/controll-empleados.mjs';
-import { verifyToken } from '../middlewares/auth.mjs';
-import { soloAdmin } from '../middlewares/roles.mjs';
+import * as ctrl from '../controllers/controll-empleados.js';
+import { verifyToken } from '../middlewares/auth.js';
+import { soloAdmin } from '../middlewares/roles.js';
 
 const router = Router();
 

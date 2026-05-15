@@ -3,82 +3,104 @@
 # 🏢 Taller API RESTFul
 ### Empresas & Empleados
 
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-22.x-339933?style=flat-square&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-5.x-000000?style=flat-square&logo=express&logoColor=white)
+![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-Seguridad-000000?style=flat-square&logo=jsonwebtokens&logoColor=white)
 ![Swagger](https://img.shields.io/badge/Swagger-Docs-85EA2D?style=flat-square&logo=swagger&logoColor=black)
-![Render](https://img.shields.io/badge/Render-Desplegado-46E3B7?style=flat-square&logo=render&logoColor=black)
+![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat-square&logo=render&logoColor=black)
+![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 
-**API RESTFul construida con Node.js · Express · MongoDB Atlas**  
+**Monorepo full-stack · TypeScript · Node.js + Express · React + Vite · MongoDB Atlas**  
 Seguridad con JSON Web Tokens · Documentación con Swagger UI
-
-[🚀 Ver API en vivo](https://taller-api-rest-mom1.onrender.com) · [📄 Documentación Swagger](https://taller-api-rest-mom1.onrender.com/api/docs)
 
 </div>
 
 ---
 
-##Descripción
+## Descripción
 
-API RESTFul para la gestión de **Empresas** y **Empleados**, para la asignatura Electiva II, haciendo uso de Swagger y JWT.
+Monorepo full-stack para la gestión de **Empresas** y **Empleados**, desarrollado para la asignatura Electiva II. Implementa una API RESTFul con autenticación JWT y documentación Swagger, consumida por una SPA en React.
 
-La relacion de los objetos seleccionados son de uno a muchos, ya que una empresa puede tener muchos empleados, pero un empleado solo puede pertenecer a una empresa.
+La relación entre entidades es de **uno a muchos**: una empresa puede tener muchos empleados, pero un empleado pertenece a una sola empresa.
 
 ---
 
 ## Características
 
 - **CRUD completo** para Empresas y Empleados
-- **Autenticación JWT** — tokens con expiración de 1 hora
+- **Autenticación JWT** — tokens con expiración de 1 hora y flujo manual de 3 pasos
 - **Control de roles** — `admin` (lectura/escritura) · `user` (solo lectura)
 - **Relación referencial** — Empleado vinculado a Empresa por ObjectId
 - **Swagger UI** — documentación interactiva en `/api/docs`
 - **MongoDB Atlas** — persistencia en la nube
-- **Desplegado en Render** — disponible públicamente
+- **TypeScript** — tipado estático en backend y frontend
+- **Desplegado** en Render (backend) + Vercel (frontend)
 
 ---
 
 ## Arquitectura
+
 ```
-Cliente (Postman / Swagger UI)
-        │  HTTPS
-        ▼
-   index.js — Express App (Render)
-        │
-        ├── Middlewares: verifyToken · soloAdmin
-        │
-        ├── /api/auth      → routes-auth      → ctrl-auth      (login JWT)
-        ├── /api/empresas  → routes-empresa   → ctrl-empresa   → Empresa (Mongoose)
-        └── /api/empleados → routes-empleados → ctrl-empleados → Empleado (Mongoose)
-                                                                       │
-                                                               MongoDB Atlas
+frontend/ (React + Vite + TypeScript)
+    │  HTTP / HTTPS
+    ▼
+backend/ (Node.js + Express + TypeScript)  ← Render
+    │
+    ├── Middlewares: verifyToken · soloAdmin
+    │
+    ├── /api/auth      → routes-auth.ts      → controll-auth.ts
+    ├── /api/empresas  → routes-empresa.ts   → controll-empresa.ts   → Empresa (Mongoose)
+    └── /api/empleados → routes-empleados.ts → controll-empleados.ts → Empleado (Mongoose)
+                                                                             │
+                                                                     MongoDB Atlas
 ```
 
 ---
 
-## 📁 Estructura del Proyecto
+## Estructura del proyecto
+
 ```
 taller-api/
-├── index.js                        # Punto de entrada
-├── swagger.mjs                     # Configuración OpenAPI 3.0
-├── .env                            # Variables de entorno (no incluido en repo)
-├── drivers/
-│   └── connect-db.mjs              # Conexión a MongoDB Atlas
-├── models/
-│   ├── empresa.mjs                 # Esquema Mongoose — Empresa
-│   └── empleados.mjs               # Esquema Mongoose — Empleado
-├── controllers/
-│   ├── controll-auth.mjs           # Login y generación de JWT
-│   ├── controll-empresa.mjs        # CRUD Empresa
-│   └── controll-empleados.mjs      # CRUD Empleado
-├── middlewares/
-│   ├── auth.mjs                    # Middleware verifyToken
-│   └── roles.mjs                   # Middleware soloAdmin
-└── routes/
-    ├── routes-auth.mjs             # POST /api/auth/login
-    ├── routes-empresa.mjs          # CRUD /api/empresas
-    └── routes-empleados.mjs        # CRUD /api/empleados
+├── backend/
+│   ├── index.ts                      # Punto de entrada
+│   ├── swagger.ts                    # Configuración OpenAPI 3.0
+│   ├── tsconfig.json                 # Configuración TypeScript
+│   ├── .env                          # Variables de entorno
+│   ├── drivers/
+│   │   └── connect-db.ts             # Conexión a MongoDB Atlas
+│   ├── models/
+│   │   ├── empresa.ts                # Esquema Mongoose + interface IEmpresa
+│   │   └── empleados.ts              # Esquema Mongoose + interface IEmpleado
+│   ├── controllers/
+│   │   ├── controll-auth.ts          # Login y generación de JWT
+│   │   ├── controll-empresa.ts       # CRUD Empresa
+│   │   └── controll-empleados.ts     # CRUD Empleado
+│   ├── middlewares/
+│   │   ├── auth.ts                   # Middleware verifyToken
+│   │   └── roles.ts                  # Middleware soloAdmin
+│   └── routes/
+│       ├── routes-auth.ts            # POST /api/auth/login
+│       ├── routes-empresa.ts         # CRUD /api/empresas
+│       └── routes-empleados.ts       # CRUD /api/empleados
+│
+└── frontend/
+    └── src/
+        ├── main.tsx                  # Punto de entrada React
+        ├── App.tsx                   # Rutas protegidas
+        ├── vite-env.d.ts             # Tipos para import.meta.env
+        ├── context/
+        │   └── AuthContext.tsx       # Estado global de autenticación
+        ├── pages/
+        │   ├── Login.tsx             # Flujo de 3 pasos para obtener el JWT
+        │   └── Dashboard.tsx         # Panel principal con sidebar
+        └── components/
+            ├── Empresas.tsx          # CRUD de empresas
+            ├── Empleados.tsx         # CRUD de empleados
+            ├── GlassCard.tsx         # Componente de tarjeta
+            └── PremiumButton.tsx     # Componente de botón
 ```
 
 ---
@@ -95,8 +117,8 @@ taller-api/
 
 ### Empresas (requiere JWT)
 
-| Método | Endpoint | Rol requerido | Descripción |
-|--------|----------|---------------|-------------|
+| Método | Endpoint | Rol | Descripción |
+|--------|----------|-----|-------------|
 | `GET` | `/api/empresas` | user / admin | Listar todas |
 | `GET` | `/api/empresas/:id` | user / admin | Obtener por ID |
 | `POST` | `/api/empresas` | **admin** | Crear empresa |
@@ -105,8 +127,8 @@ taller-api/
 
 ### Empleados (requiere JWT)
 
-| Método | Endpoint | Rol requerido | Descripción |
-|--------|----------|---------------|-------------|
+| Método | Endpoint | Rol | Descripción |
+|--------|----------|-----|-------------|
 | `GET` | `/api/empleados` | user / admin | Listar todos (con empresa) |
 | `GET` | `/api/empleados/:id` | user / admin | Obtener por ID |
 | `POST` | `/api/empleados` | **admin** | Crear empleado |
@@ -117,82 +139,15 @@ taller-api/
 
 ## Seguridad JWT
 
-El flujo de autenticación es el siguiente:
 ```
 1. POST /api/auth/login  →  { username, password }
-2. Servidor valida credenciales y responde con el token JWT
+2. Servidor valida credenciales y devuelve el token JWT
 3. El cliente incluye el token en cada petición:
    Authorization: Bearer <token>
-4. El middleware verifyToken valida el token
-5. El middleware soloAdmin verifica el rol para operaciones de escritura
+4. verifyToken valida firma y expiración
+5. soloAdmin verifica el rol para operaciones de escritura
 ```
 
 ---
 
-## ⚙️ Variables de Entorno
-
-Crea un archivo `.env` en la raíz del proyecto:
-```env
-PORT=3000
-MONGODB_URI=mongodb+srv://<usuario>:<password>@cluster0.mongodb.net/
-MONGODB_DB=tallerapi
-JWT_SECRET=tu_clave_secreta_aqui
-
-# Credenciales de usuarios
-ADMIN_USER=admin
-ADMIN_PASS=tu_contraseña_admin
-USER_USER=user
-USER_PASS=tu_contraseña_user
-```
-
----
-
-##  Instalación y Ejecución Local
-
-**Prerrequisitos:** Node.js >= 18 · Cuenta en MongoDB Atlas
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/DumarMalpica/taller-api-rest.git
-cd taller-api-rest
-
-# 2. Instalar dependencias
-npm install
-
-# 3. Configurar variables de entorno
-cp .env.example .env
-# editar .env con tus valores
-
-# 4. Ejecutar en desarrollo
-npm run dev
-
-# 5. Ejecutar en producción
-npm start
-```
-
-Verifica que funciona:
-```
-GET http://localhost:3000/ping
-→ { "state": true, "msg": "pong" }
-```
-
----
-
-## 🌐 Despliegue
-
-La API está desplegada en **Render.com**:
-
-| Recurso | URL |
-|---------|-----|
-| API Base | `https://taller-api-rest-mom1.onrender.com` |
-| Health check | `https://taller-api-rest-mom1.onrender.com/ping` |
-| Swagger UI | `https://taller-api-rest-mom1.onrender.com/api/docs` |
-
-
----
-
-## Link de documentacion
-
-| Recurso | URL |
-|---------|-----|
-| Diagramas | `https://drive.google.com/file/d/1B6zVzJ6U-WVpUedWXyqxNCydZLZql3Xe/view?usp=sharing` |
 

@@ -4,11 +4,17 @@ import { LayoutDashboard, Users, Building, LogOut, ChevronRight } from 'lucide-r
 import Empresas from '../components/Empresas';
 import Empleados from '../components/Empleados';
 
+interface NavItem {
+  name: string;
+  path: string;
+  icon: React.ElementType;
+}
+
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const location = useLocation();
 
-  const navItems = [
+  const navItems: NavItem[] = [
     { name: 'Empresas', path: '/dashboard/empresas', icon: Building },
     { name: 'Empleados', path: '/dashboard/empleados', icon: Users },
   ];
@@ -27,7 +33,7 @@ export default function Dashboard() {
         <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--clr-bg-elevated)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--clr-bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <User size={20} color="var(--clr-text-muted)" />
+              <UserIcon size={20} color="var(--clr-text-muted)" />
             </div>
             <div>
               <div style={{ fontWeight: 500 }}>{user?.username}</div>
@@ -48,7 +54,7 @@ export default function Dashboard() {
               const isActive = location.pathname.includes(item.path);
               return (
                 <li key={item.path}>
-                  <Link 
+                  <Link
                     to={item.path}
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -74,7 +80,7 @@ export default function Dashboard() {
         </nav>
 
         <div style={{ padding: '1.5rem', borderTop: '1px solid var(--clr-bg-elevated)' }}>
-          <button 
+          <button
             onClick={logout}
             style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'transparent', border: '1px solid var(--clr-danger)', color: 'var(--clr-danger)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', cursor: 'pointer', transition: 'all 0.2s' }}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; }}
@@ -105,7 +111,11 @@ export default function Dashboard() {
   );
 }
 
-// Ensure local User icon matches lucide usage
-function User(props) {
-  return <svg xmlns="http://www.w3.org/2000/svg" width={props.size || 24} height={props.size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+function UserIcon({ size = 24, color, ...props }: { size?: number; color?: string } & React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+  );
 }

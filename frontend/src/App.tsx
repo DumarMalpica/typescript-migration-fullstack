@@ -5,13 +5,13 @@ import Dashboard from './pages/Dashboard';
 
 import './index.css';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuth();
   if (!token) return <Navigate to="/login" replace />;
   return children;
 };
 
-const PublicRoute = ({ children }) => {
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuth();
   if (token) return <Navigate to="/dashboard" replace />;
   return children;
