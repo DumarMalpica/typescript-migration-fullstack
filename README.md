@@ -150,4 +150,34 @@ taller-api/
 
 ---
 
+## Ejecución local
+
+**Prerrequisitos:** Node.js >= 18
+
+```bash
+# 1. Instalar dependencias
+cd backend && npm install
+cd ../frontend && npm install
+```
+
+**Terminal 1 — Backend:**
+
+```bash
+cd backend
+npm run dev
+# API:    http://localhost:3000
+# Swagger: http://localhost:3000/api/docs
+```
+
+**Terminal 2 — Frontend:**
+
+```bash
+cd frontend
+npm run dev
+# App: http://localhost:5173
+```
+
+
+---
+
 
